@@ -97,7 +97,7 @@ load_Kernel:
 
 ok_load_Kernel:
 
-     jmp BaseOfSetup:OffsetOfSetup       ; 跳转去执行 setup.bin
+    jmp BaseOfSetup:OffsetOfSetup       ; 跳转去执行 setup.bin
     ;jmp $
 
 ; 关闭软驱

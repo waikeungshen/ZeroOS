@@ -8,11 +8,10 @@ ASMBFLAGS	= 		-I boot/include/
 CC			= 		cc
 CFLAGS		= 		-I include/
 
-#$(RAMDISK) : boot/boot.bin boot/setup.bin kernel/kernel.bin
-$(RAMDISK) : boot/boot.bin boot/setup.bin
+$(RAMDISK) : boot/boot.bin boot/setup.bin kernel/kernel.bin
 	dd if=boot/boot.bin of=$@ bs=512 count=1 conv=notrunc
 	dd if=boot/setup.bin of=$@ bs=512 seek=1 count=4 conv=notrunc
-	#dd if=kernel/kernel.bin of=$@ bs=512 seek=5 conv=notrunc
+	dd if=kernel/kernel.bin of=$@ bs=512 seek=5 conv=notrunc
 
 boot/boot.bin : boot/boot.s
 	$(ASM) -o $@ $<

@@ -91,9 +91,76 @@ pm_start:
     mov ah, 0Fh
     mov al, 'P'
     mov [gs:((80 * 0 + 39) * 2)], ax
+    
+    call InitKernel
 
-    jmp $
+    ;jmp $
+    jmp dword SelectorFlatC:KernelEntryPointPhyAddr
 
+; 重新放置内核
+InitKernel:
+    xor esi, esi
+    mov cx, word[BaseOfKernelFilePhyAddr+2ch]
+    movzx ecx, cx                                   ; ecx <= pELFHdr->e_phnum, The number of Program header table
+    mov esi, [BaseOfKernelFilePhyAddr+1ch]          ; esi <= pELFHdr->e_phoff, Program header table 在文件中的偏移量
+    add esi, BaseOfKernelFilePhyAddr                ; Program header table 在内存中的位置
+.Begin: 
+    mov eax, [esi + 0]
+    cmp eax, 0
+    jz .NoAction
+    push dword [esi + 010h]              ; size
+    mov eax, [esi + 04h]
+    add eax, BaseOfKernelFilePhyAddr
+    push eax                             ; src
+    push dword [esi + 08h]               ; dst
+    call MemCpy
+    add esp, 12     ; 栈指针向下移动12字节
+
+.NoAction:
+    add esi, 020h
+    dec ecx         ; ecx--
+    jnz .Begin
+
+    ret
+
+; ------------------------------------------------------------------------
+; 内存拷贝，仿 memcpy
+; ------------------------------------------------------------------------
+; void* MemCpy(void* es:pDest, void* ds:pSrc, int iSize);
+; ------------------------------------------------------------------------
+MemCpy:
+	push	ebp             ; 保存栈基址指针
+	mov	ebp, esp            ; 改变栈地址指针
+
+	push	esi
+	push	edi
+	push	ecx
+
+	mov	edi, [ebp + 8]	; Destination
+	mov	esi, [ebp + 12]	; Source
+	mov	ecx, [ebp + 16]	; Counter
+.1:
+	cmp	ecx, 0		; 判断计数器
+	jz	.2		; 计数器为零时跳出
+
+	mov	al, [ds:esi]
+	inc	esi         ; esi++
+					; 逐字节移动
+	mov	byte [es:edi], al
+	inc	edi	        ; edi++
+
+	dec	ecx		; 计数器减一
+	jmp	.1		; 循环
+.2:
+	mov	eax, [ebp + 8]	; 返回值
+
+	pop	ecx
+	pop	edi
+	pop	esi
+	mov	esp, ebp        ; 恢复堆栈地址
+	pop	ebp             ; 恢复栈基址指针
+
+	ret			; 函数结束，返回
 
 [SECTION .data]
     
