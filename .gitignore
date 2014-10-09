@@ -1,0 +1,7 @@
+.DS_Store
+*.bin
+*.o
+*.bak
+*.swp
+*.sh
+*.img
