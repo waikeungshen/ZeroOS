@@ -14,13 +14,13 @@ $(RAMDISK) : boot/boot.bin boot/setup.bin
 	dd if=boot/setup.bin of=$@ bs=512 seek=1 count=4 conv=notrunc
 	#dd if=kernel/kernel.bin of=$@ bs=512 seek=5 conv=notrunc
 
-boot/boot.bin : boot/boot.asm
+boot/boot.bin : boot/boot.s
 	$(ASM) -o $@ $<
 
-boot/setup.bin : boot/setup.asm
+boot/setup.bin : boot/setup.s
 	$(ASM) -o $@ $<
 
-kernel/kernel.bin : kernel/kernel.asm
+kernel/kernel.bin : kernel/kernel.s
 	$(ASM) -o $@ $<
 
 qemu:

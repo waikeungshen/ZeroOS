@@ -87,6 +87,7 @@ pm_start:
     mov fs, ax
     mov ss, ax
     mov esp, TopOfStack 
+
     mov ah, 0Fh
     mov al, 'P'
     mov [gs:((80 * 0 + 39) * 2)], ax
