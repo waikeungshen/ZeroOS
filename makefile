@@ -3,10 +3,14 @@
 
 RAMDISK		= 		floppy.img
 ASM			= 		nasm
-ASMKFLAGS	= 		-I include/ -f elf
-ASMBFLAGS	= 		-I boot/include/
-CC			= 		cc
-CFLAGS		= 		-I include/
+ASM_FLAGS	= 		-I include/ -f elf
+CC			= 		gcc
+CC_FLAGS	= 		-m32 -c -I include/
+LD			= 		ld
+LD_FLAGS	= 		-s -Ttext 0x30000
+
+KERNEL		=		kernel/kernel.bin
+OBJS		=		kernel/kernel.o kernel/entry.o lib/console.o lib/common.o
 
 $(RAMDISK) : boot/boot.bin boot/setup.bin kernel/kernel.bin
 	dd if=boot/boot.bin of=$@ bs=512 count=1 conv=notrunc
@@ -19,8 +23,23 @@ boot/boot.bin : boot/boot.s
 boot/setup.bin : boot/setup.s
 	$(ASM) -o $@ $<
 
-kernel/kernel.bin : kernel/kernel.s
-	$(ASM) -o $@ $<
+$(KERNEL) : $(OBJS)
+	$(LD) $(LD_FLAGS) $(OBJS) -o $(KERNEL)
+
+kernel/kernel.o : kernel/kernel.s
+	$(ASM) $(ASM_FLAGS) -o $@ $<
+
+kernel/entry.o : kernel/entry.c include/console.h
+	$(CC) $(CC_FLAGS) -o $@ $<
+
+lib/console.o : lib/console.c include/types.h include/common.h
+	$(CC) $(CC_FLAGS) -o $@ $<
+
+lib/common.o : lib/common.c include/common.h
+	$(CC) $(CC_FLAGS) -o $@ $<
+
+clean :
+	rm -f $(OBJS)
 
 qemu:
 	qemu -fda floppy.img -boot a
