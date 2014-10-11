@@ -93,6 +93,7 @@ void console_putc_color(char c, real_color_t back, real_color_t fore)
     else if (c >= ' ')
     {
         video_memory[cursor_y * 80 + cursor_x] = c | attribute;
+        cursor_x++;
     }
 
     // 每80个字符一行，满就换行
