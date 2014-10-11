@@ -22,9 +22,5 @@ _start:
 
     call kernel_entry
 
-    mov ah, 0Ch
-    mov al, 'K'
-    mov [gs:((80 * 2 + 39) * 2)], ax
-
     jmp $
 ;times 10240-($-$$) db 0

@@ -10,7 +10,7 @@ LD			= 		ld
 LD_FLAGS	= 		-s -Ttext 0x30000
 
 KERNEL		=		kernel/kernel.bin
-OBJS		=		kernel/kernel.o kernel/entry.o lib/console.o lib/common.o
+OBJS		=		kernel/kernel.o kernel/entry.o lib/console.o lib/common.o kernel/gdt.o kernel/gdt_s.o
 
 $(RAMDISK) : boot/boot.bin boot/setup.bin kernel/kernel.bin
 	dd if=boot/boot.bin of=$@ bs=512 count=1 conv=notrunc
@@ -30,6 +30,12 @@ kernel/kernel.o : kernel/kernel.s
 	$(ASM) $(ASM_FLAGS) -o $@ $<
 
 kernel/entry.o : kernel/entry.c include/console.h
+	$(CC) $(CC_FLAGS) -o $@ $<
+
+kernel/gdt_s.o : kernel/gdt_s.s
+	$(ASM) $(ASM_FLAGS) -o $@ $<
+
+kernel/gdt.o : kernel/gdt.c include/gdt.h
 	$(CC) $(CC_FLAGS) -o $@ $<
 
 lib/console.o : lib/console.c include/types.h include/common.h
