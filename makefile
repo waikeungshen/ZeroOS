@@ -10,7 +10,7 @@ LD			= 		ld
 LD_FLAGS	= 		-s -Ttext 0x30000
 
 KERNEL		=		kernel/kernel.bin
-OBJS		=		kernel/kernel.o kernel/entry.o lib/console.o lib/common.o kernel/gdt.o kernel/gdt_s.o
+OBJS		=		kernel/kernel.o kernel/entry.o lib/console.o lib/common.o kernel/gdt.o kernel/gdt_s.o kernel/idt.o kernel/idt_s.o kernel/i8259.o
 
 $(RAMDISK) : boot/boot.bin boot/setup.bin kernel/kernel.bin
 	dd if=boot/boot.bin of=$@ bs=512 count=1 conv=notrunc
@@ -43,6 +43,15 @@ lib/console.o : lib/console.c include/types.h include/common.h
 
 lib/common.o : lib/common.c include/common.h
 	$(CC) $(CC_FLAGS) -o $@ $<
+
+kernel/i8259.o : kernel/i8259.c include/common.h include/types.h
+	$(CC) $(CC_FLAGS) -o $@ $<
+
+kernel/idt.o : kernel/idt.c include/idt.h include/types.h include/console.h
+	$(CC) $(CC_FLAGS) -o $@ $<
+
+kernel/idt_s.o : kernel/idt_s.s
+	$(ASM) $(ASM_FLAGS) -o $@ $<
 
 clean :
 	rm -f $(OBJS)
