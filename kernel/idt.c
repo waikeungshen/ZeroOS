@@ -16,9 +16,11 @@ static void idt_set_gate(u8 num, u32 base, u16 select, u8 flags);
 // 初始化中断描述符表
 void init_idt()
 {
+    init_8259A();
+
     idt_ptr.limit = sizeof(idt_gate_t) * 256 - 1;
     idt_ptr.base = (u32)&idt_gates;
-
+    
     // 0 ~ 32 用于CPU的中断处理
     idt_set_gate(0,  (u32)isr0,  0x08, 0x8E);
     idt_set_gate(1,  (u32)isr1,  0x08, 0x8E);
@@ -52,6 +54,23 @@ void init_idt()
     idt_set_gate(29, (u32)isr29, 0x08, 0x8E);
     idt_set_gate(30, (u32)isr30, 0x08, 0x8E);
     idt_set_gate(31, (u32)isr31, 0x08, 0x8E);
+
+    idt_set_gate(32, (u32)irq32, 0x08, 0x8E);
+    idt_set_gate(33, (u32)irq33, 0x08, 0x8E);
+    idt_set_gate(34, (u32)irq34, 0x08, 0x8E);
+    idt_set_gate(35, (u32)irq35, 0x08, 0x8E);
+    idt_set_gate(36, (u32)irq36, 0x08, 0x8E);
+    idt_set_gate(37, (u32)irq37, 0x08, 0x8E);
+    idt_set_gate(38, (u32)irq38, 0x08, 0x8E);
+    idt_set_gate(39, (u32)irq39, 0x08, 0x8E);
+    idt_set_gate(40, (u32)irq40, 0x08, 0x8E);
+    idt_set_gate(41, (u32)irq41, 0x08, 0x8E);
+    idt_set_gate(42, (u32)irq42, 0x08, 0x8E);
+    idt_set_gate(43, (u32)irq43, 0x08, 0x8E);
+    idt_set_gate(44, (u32)irq44, 0x08, 0x8E);
+    idt_set_gate(45, (u32)irq45, 0x08, 0x8E);
+    idt_set_gate(46, (u32)irq46, 0x08, 0x8E);
+    idt_set_gate(47, (u32)irq47, 0x08, 0x8E);
 
     // 255 将来实现系统调用
     idt_set_gate(255, (u32)isr255, 0x08, 0x8E);
@@ -89,5 +108,24 @@ void isr_handler(pt_regs *regs)
     else
     {
         console_write_color("No Function to deal with this interrupt!\n", rc_black, rc_red);
+    }
+}
+
+// 调用中断处理函数, 处理IRQ
+void irq_handler(pt_regs *regs)
+{
+    if (regs->int_no >= 40)
+    {
+        outb(0xA0, 0x20);   // 发送重设信号给从片
+    }
+    outb(0x20, 0x20);       // 发送重设信号给主片
+
+    if (interrupt_handlers[regs->int_no])   // 如果对应的处理函数存在
+    {
+        interrupt_handlers[regs->int_no](regs); // 由相应的处理函数处理
+    }
+    else
+    {
+        console_write_color("No Function to deal with this interrupt request!\n", rc_black, rc_red);
     }
 }

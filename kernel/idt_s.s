@@ -98,3 +98,64 @@ isr_common_stub:
     popa        ; pops edi, esi, ebp, esp, ebx, edx, ecx, eax
     add esp, 8  ; 清理栈中的error code 和 ISP
     iret
+
+;--------------------------------------------------
+; 声明宏 IRQ 
+%macro IRQ 1
+global irq%1
+
+irq%1:
+    cli ; 关中断
+    push 0
+    push %1
+    call irq_common_stub
+%endmacro
+
+; 由宏指令完成定义中断处理函数，即void irq32() ~ void isr47()
+IRQ     32
+IRQ     33
+IRQ     34
+IRQ     35
+IRQ     36
+IRQ     37
+IRQ     38
+IRQ     39
+IRQ     40
+IRQ     41
+IRQ     42
+IRQ     43
+IRQ     44
+IRQ     45
+IRQ     46
+IRQ     47
+
+global irq_common_stub
+
+extern irq_handler
+
+irq_common_stub:
+    pusha       ; push edi, esi, ebp, esp, ebx, edx, ecx, eax
+    mov ax, ds
+    push eax    ; 保存数据段描述符
+
+    mov ax, 0x10    ; 加载内核数据段描述符
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+
+    push esp
+    call irq_handler
+    add esp, 4
+
+    pop eax     ; 恢复原来的数据段描述符
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+
+    popa        ; pops edi, esi, ebp, esp, ebx, edx, ecx, eax
+    add esp, 8  ; 清理栈中的error code 和 ISP
+    iret

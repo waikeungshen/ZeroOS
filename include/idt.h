@@ -95,4 +95,44 @@ void isr31();
 // 32 ~ 255 属于用户自定义中断
 void isr255();
 
+/****************************************************/
+// IRQ 对应的 中断号
+#define IRQ0     32
+#define IRQ1     33
+#define IRQ2     34
+#define IRQ3     35
+#define IRQ4     36
+#define IRQ5     37
+#define IRQ6     38
+#define IRQ7     39
+#define IRQ8     40
+#define IRQ9     41
+#define IRQ10    42
+#define IRQ11    43
+#define IRQ12    44
+#define IRQ13    45
+#define IRQ14    46
+#define IRQ15    47
+// 调用处理函数，处理IQR
+void iqr_handler(pt_regs *regs);
+
+// 声明中断处理函数, 汇编实现
+// IRQ中断服务程序: (Interrupt Request)
+void irq32();
+void irq33();
+void irq34();
+void irq35();
+void irq36();
+void irq37();
+void irq38();
+void irq39();
+void irq40();
+void irq41();
+void irq42();
+void irq43();
+void irq44();
+void irq45();
+void irq46();
+void irq47();
+
 #endif //INCLUDE_IDT_H
