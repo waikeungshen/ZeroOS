@@ -1,6 +1,7 @@
 #include "console.h"
 #include "gdt.h"
 #include "idt.h"
+#include "timer.h"
 
 int kernel_entry()
 {
@@ -13,5 +14,11 @@ int kernel_entry()
     
     asm volatile ("int $0x3");   
 
+    //asm volatile ("sti"); // 开启中断
+
+    init_timer(200);
+
+    //asm volatile ("int $0x32");   
+    asm volatile ("int $0x3");   
     return 0;
 }
