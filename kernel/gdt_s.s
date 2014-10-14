@@ -11,5 +11,5 @@ gdt_flush:
     mov gs, ax
     mov ss, ax
     jmp 0x08:.flush     ; 0x08 是当前代码段描述符
-.flush
+.flush:
     ret

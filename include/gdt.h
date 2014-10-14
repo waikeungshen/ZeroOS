@@ -10,12 +10,12 @@ typedef struct gdt_entry_t {
     u8  access;         // 段存在位、描述符特权级、描述符类型、描述符子类别
     u8  granularity;    // 其他标志、段界限 19 ~ 16
     u8  base_high;      // 段基地址 31 ~ 24
-} gdt_entry;
+} __attribute__((packed)) gdt_entry_t;
 
 typedef struct gdt_ptr_t {
     u16 limit;          // 全局描述符表限长
     u32 base;           // 全局描述符表 32 位基地址
-} gdt_ptr;
+} __attribute__((packed)) gdt_ptr_t;
 
 // 初始化全局描述符表(GDT)
 void init_gdt();
