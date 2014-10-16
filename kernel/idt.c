@@ -101,6 +101,8 @@ void register_interrupt_handler(u8 n, interrupt_handler_t handler)
 // 调用中断处理函数, 处理ISR
 void isr_handler(pt_regs *regs)
 {
+    console_write_color("Int number : ", rc_black, rc_green);
+    console_write_dec(regs->int_no, rc_black, rc_green);
     if (interrupt_handlers[regs->int_no])   // 如果对应的处理函数存在
     {
         interrupt_handlers[regs->int_no](regs); // 由相应的处理函数处理
@@ -114,6 +116,8 @@ void isr_handler(pt_regs *regs)
 // 调用中断处理函数, 处理IRQ
 void irq_handler(pt_regs *regs)
 {
+    console_write_color("Int number : ", rc_black, rc_red);
+    console_write_dec(regs->int_no, rc_black, rc_red);
     if (regs->int_no >= 40)
     {
         outb(0xA0, 0x20);   // 发送重设信号给从片
@@ -126,6 +130,6 @@ void irq_handler(pt_regs *regs)
     }
     else
     {
-        console_write_color("No Function to deal with this interrupt request!\n", rc_black, rc_red);
+        console_write_color("No Function to deal with this interrupt request!\n", rc_black, rc_green);
     }
 }
