@@ -1,5 +1,6 @@
 #include "idt.h"
 #include "console.h"
+#include "string.h"
 
 // 中断描述符表
 idt_gate_t idt_gates[256];
@@ -18,9 +19,13 @@ void init_idt()
 {
     init_8259A();
 
+    bzero((u8 *)&interrupt_handlers, sizeof(interrupt_handler_t) * 256);
+
     idt_ptr.limit = sizeof(idt_gate_t) * 256 - 1;
     idt_ptr.base = (u32)&idt_gates;
     
+    bzero((u8 *)&idt_gates, sizeof(idt_gate_t) * 256);
+
     // 0 ~ 32 用于CPU的中断处理
     idt_set_gate(0,  (u32)isr0,  0x08, 0x8E);
     idt_set_gate(1,  (u32)isr1,  0x08, 0x8E);
