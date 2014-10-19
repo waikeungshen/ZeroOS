@@ -16,7 +16,7 @@ int kernel_entry()
 
     asm volatile ("sti"); // 开启中断
 
-    //init_timer(200);
+    init_timer(200);
 
     asm volatile ("int $0x21");   
     asm volatile ("int $0x3");   

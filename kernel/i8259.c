@@ -42,6 +42,6 @@ void init_8259A()
     //outb(INT_S_PORT2, 0x0);
     
     // 设置主从片关闭所有中断
-    outb(INT_M_PORT2, 0xFD);
+    outb(INT_M_PORT2, 0xFC);
     outb(INT_S_PORT2, 0xFF);
 }

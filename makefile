@@ -63,9 +63,9 @@ clean :
 	rm -f $(OBJS)
 
 qemu:
-	qemu -fda floppy.img -boot a
+	qemu -fda floppy.img -boot a -m 64M
 
 debug:
-	qemu -s -S -fda floppy.img -boot a &
+	qemu -s -S -fda floppy.img -boot a -m 64M &
 	sleep 1
 	gdb
