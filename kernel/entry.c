@@ -18,7 +18,7 @@ int kernel_entry()
 
     init_timer(200);
 
-    asm volatile ("int $0x21");   
+    //asm volatile ("int $0x21");   
     asm volatile ("int $0x3");   
     return 0;
 }

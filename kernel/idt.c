@@ -14,6 +14,8 @@ interrupt_handler_t interrupt_handlers[256];
 // 设置中断描述符
 static void idt_set_gate(u8 num, u32 base, u16 select, u8 flags);
 
+void isr6_callback(pt_regs *reg);
+void isr13_callback(pt_regs *reg);
 // 初始化中断描述符表
 void init_idt()
 {
@@ -82,6 +84,9 @@ void init_idt()
 
     // 更新设置中断描述符表
     idt_flush((u32)&idt_ptr);
+
+    //register_interrupt_handler(6, isr6_callback);
+    register_interrupt_handler(13, isr13_callback);
 }
 
 // 设置中断描述符
@@ -106,14 +111,14 @@ void register_interrupt_handler(u8 n, interrupt_handler_t handler)
 // 调用中断处理函数, 处理ISR
 void isr_handler(pt_regs *regs)
 {
-    console_write_color("Int number : ", rc_black, rc_green);
-    console_write_dec(regs->int_no, rc_black, rc_green);
     if (interrupt_handlers[regs->int_no])   // 如果对应的处理函数存在
     {
         interrupt_handlers[regs->int_no](regs); // 由相应的处理函数处理
     }
     else
     {
+        console_write_color("Int number : ", rc_black, rc_green);
+        console_write_dec(regs->int_no, rc_black, rc_green);
         console_write_color("No Function to deal with this interrupt!\n", rc_black, rc_red);
     }
 }
@@ -121,8 +126,6 @@ void isr_handler(pt_regs *regs)
 // 调用中断处理函数, 处理IRQ
 void irq_handler(pt_regs *regs)
 {
-    console_write_color("Int number : ", rc_black, rc_red);
-    console_write_dec(regs->int_no, rc_black, rc_red);
     if (regs->int_no >= 40)
     {
         outb(0xA0, 0x20);   // 发送重设信号给从片
@@ -135,6 +138,18 @@ void irq_handler(pt_regs *regs)
     }
     else
     {
+        console_write_color("Int number : ", rc_black, rc_red);
+        console_write_dec(regs->int_no, rc_black, rc_red);
         console_write_color("No Function to deal with this interrupt request!\n", rc_black, rc_green);
     }
+}
+
+// 处理6号中断
+void isr6_callback(pt_regs *reg)
+{
+    console_write("Int number 6\n");
+}
+void isr13_callback(pt_regs *reg)
+{
+    //console_write("Int number 13\n");
 }
