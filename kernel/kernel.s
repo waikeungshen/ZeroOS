@@ -22,5 +22,6 @@ _start:
 
     call kernel_entry
 
-    jmp $
+    hlt
+    ;jmp $
 ;times 10240-($-$$) db 0

@@ -10,7 +10,7 @@ LD			= 		ld
 LD_FLAGS	= 		-s -Ttext 0x30000
 
 KERNEL		=		kernel/kernel.bin
-OBJS		=		kernel/kernel.o kernel/entry.o lib/console.o lib/common.o kernel/gdt.o kernel/gdt_s.o kernel/idt.o kernel/idt_s.o kernel/i8259.o kernel/timer.o
+OBJS		=		kernel/kernel.o kernel/entry.o lib/console.o lib/common.o kernel/gdt.o kernel/gdt_s.o kernel/idt.o kernel/idt_s.o kernel/i8259.o kernel/timer.o lib/string.o
 
 $(RAMDISK) : boot/boot.bin boot/setup.bin kernel/kernel.bin
 	dd if=boot/boot.bin of=$@ bs=512 count=1 conv=notrunc
@@ -44,6 +44,9 @@ lib/console.o : lib/console.c include/types.h include/common.h
 lib/common.o : lib/common.c include/common.h
 	$(CC) $(CC_FLAGS) -o $@ $<
 
+lib/string.o : lib/string.c include/types.h
+	$(CC) $(CC_FLAGS) -o $@ $<
+
 kernel/i8259.o : kernel/i8259.c include/common.h include/types.h
 	$(CC) $(CC_FLAGS) -o $@ $<
 
@@ -60,9 +63,9 @@ clean :
 	rm -f $(OBJS)
 
 qemu:
-	qemu -fda floppy.img -boot a
+	qemu -fda floppy.img -boot a -m 64M
 
 debug:
-	qemu -s -S -fda floppy.img -boot a &
+	qemu -s -S -fda floppy.img -boot a -m 64M &
 	sleep 1
 	gdb

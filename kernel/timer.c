@@ -4,7 +4,10 @@
 
 void timer_callback(pt_regs *regs)
 {
-    console_write_color("Timer  ",rc_black, rc_green);
+    static int tick = 0;
+    console_write_dec(tick++, rc_black, rc_green);
+    console_write_color("Tick ",rc_black, rc_green);
+    //console_putc_color('\n',rc_black, rc_green);
 }
 
 void init_timer(u32 frequency)

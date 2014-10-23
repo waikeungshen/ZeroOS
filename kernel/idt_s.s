@@ -108,7 +108,7 @@ irq%1:
     cli ; 关中断
     push 0
     push %1
-    call irq_common_stub
+    jmp irq_common_stub
 %endmacro
 
 ; 由宏指令完成定义中断处理函数，即void irq32() ~ void isr47()
