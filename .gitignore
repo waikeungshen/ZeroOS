@@ -4,5 +4,4 @@
 *.bak
 *.swp
 *.sh
-*.img
 .ycm_extra_conf.py*
