@@ -123,3 +123,35 @@ void console_write_color(char *str, real_color_t back, real_color_t fore)
         console_putc_color(*str++, back, fore);
     }
 }
+
+void console_write_dec(u32 n, real_color_t back, real_color_t fore)
+{
+    if (n == 0)
+    {
+        console_putc_color('0', back, fore);
+        return;
+    }
+
+    u32 acc = n;
+    char c[32];
+    int  i = 0;
+    while (acc > 0)
+    {
+        c[i] = '0' + acc % 10;
+        acc /= 10;
+        i++;
+    }
+    c[i] = 0;
+
+    // 倒置回来
+    char c2[32];
+    c2[i--] = 0;
+
+    int j = 0;
+    while(i >= 0)
+    {
+        c2[i--] = c[j++];
+    }
+
+    console_write_color(c2, back, fore);
+}

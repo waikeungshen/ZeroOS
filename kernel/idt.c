@@ -1,5 +1,6 @@
 #include "idt.h"
 #include "console.h"
+#include "string.h"
 
 // 中断描述符表
 idt_gate_t idt_gates[256];
@@ -13,14 +14,20 @@ interrupt_handler_t interrupt_handlers[256];
 // 设置中断描述符
 static void idt_set_gate(u8 num, u32 base, u16 select, u8 flags);
 
+void isr6_callback(pt_regs *reg);
+void isr13_callback(pt_regs *reg);
 // 初始化中断描述符表
 void init_idt()
 {
     init_8259A();
 
+    bzero((u8 *)&interrupt_handlers, sizeof(interrupt_handler_t) * 256);
+
     idt_ptr.limit = sizeof(idt_gate_t) * 256 - 1;
     idt_ptr.base = (u32)&idt_gates;
     
+    bzero((u8 *)&idt_gates, sizeof(idt_gate_t) * 256);
+
     // 0 ~ 32 用于CPU的中断处理
     idt_set_gate(0,  (u32)isr0,  0x08, 0x8E);
     idt_set_gate(1,  (u32)isr1,  0x08, 0x8E);
@@ -77,6 +84,9 @@ void init_idt()
 
     // 更新设置中断描述符表
     idt_flush((u32)&idt_ptr);
+
+    //register_interrupt_handler(6, isr6_callback);
+    register_interrupt_handler(13, isr13_callback);
 }
 
 // 设置中断描述符
@@ -107,6 +117,8 @@ void isr_handler(pt_regs *regs)
     }
     else
     {
+        console_write_color("Int number : ", rc_black, rc_green);
+        console_write_dec(regs->int_no, rc_black, rc_green);
         console_write_color("No Function to deal with this interrupt!\n", rc_black, rc_red);
     }
 }
@@ -126,6 +138,18 @@ void irq_handler(pt_regs *regs)
     }
     else
     {
-        console_write_color("No Function to deal with this interrupt request!\n", rc_black, rc_red);
+        console_write_color("Int number : ", rc_black, rc_red);
+        console_write_dec(regs->int_no, rc_black, rc_red);
+        console_write_color("No Function to deal with this interrupt request!\n", rc_black, rc_green);
     }
+}
+
+// 处理6号中断
+void isr6_callback(pt_regs *reg)
+{
+    console_write("Int number 6\n");
+}
+void isr13_callback(pt_regs *reg)
+{
+    //console_write("Int number 13\n");
 }
